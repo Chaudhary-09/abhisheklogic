@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>M.R.D. INTER COLLAGE BISAVALI RAYA, (MATHURA)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f0f8ff;
+    }
+
+    /* Scrolling heading styles */
+    .scroll-container {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(to right, lightgreen, skyblue);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      height: 40px;
+    }
+
+    .scroll-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-size: 24px;
+      font-weight: bold;
+      animation: scrollText 15s linear infinite;
+      padding-left: 100%;
+    }
+
+    @keyframes scrollText {
+      0% { transform: translateX(0%); }
+      50% { transform: translateX(-50%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .m { color: orange; }
+    .r { color: white; }
+    .d { color: green; }
+
+    .scroll-text.highlight .inter { color: orange; }
+    .scroll-text.highlight .collage { color: white; }
+    .scroll-text.highlight .bisavali { color: green; }
+    .scroll-text.highlight .raya { color: black; }
+    .scroll-text.highlight .mathura { color: white; }
+
+    h2 {
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    .form-section {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-section input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .form-section input:hover,
+    .form-section input:focus {
+      border-color: green;
+      background-color: #e0ffe0;
+    }
+
+    .form-section button {
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-section button:hover {
+      background: linear-gradient(to right, lightgreen, skyblue);
+      color: red;
+    }
+
+    .student-group {
+      margin: 20px auto;
+      width: 90%;
+    }
+
+    .student-group h3 {
+      background-color: #e0f7fa;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    img.student-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scrolling heading -->
+  <div class="scroll-container">
+    <div class="scroll-text" id="scrollText">
+      <span class="m">M</span><span class="r">R</span><span class="d">D</span>
+      <span class="inter">INTER</span>
+      <span class="collage">COLLAGE</span>
+      <span class="bisavali">BISAVALI</span>
+      <span class="raya">RAYA</span>
+      <span class="mathura">(MATHURA)</span>
+    </div>
+  </div>
+
+  <h2>Fees Structure</h2>
+
+  <!-- Student form -->
+  <div class="form-section">
+    <input type="text" id="studentName" placeholder="Student's Name" />
+    <input type="text" id="fatherName" placeholder="Father's Name" />
+    <input type="text" id="studentClass" placeholder="Class" />
+    <input type="text" id="rollNo" placeholder="Roll No." />
+    <input type="number" id="feesSubmit" placeholder="Fees Submit" />
+    <input type="number" id="dueFees" placeholder="Due Fees" />
+    <input type="file" id="studentImage" accept="image/*" />
+    <button onclick="addStudent()">Add New Student</button>
+  </div>
+
+  <!-- Student groups -->
+  <div id="studentGroups"></div>
+
+  <script>
+    const students = {};
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    function addStudent() {
+      const name = capitalize(document.getElementById('studentName').value.trim());
+      const father = document.getElementById('fatherName').value.trim();
+      const studentClass = document.getElementById('studentClass').value.trim();
+      const roll = document.getElementById('rollNo').value.trim();
+      const fees = document.getElementById('feesSubmit').value.trim();
+      const due = document.getElementById('dueFees').value.trim();
+      const imageInput = document.getElementById('studentImage');
+
+      if (!name || !father || !studentClass || !roll || !fees || !due || !imageInput.files[0]) {
+        alert("Please fill all fields and upload an image.");
+        return;
+      }
+
+      const firstLetter = name.charAt(0).toUpperCase();
+
+      if (!students[firstLetter]) {
+        students[firstLetter] = [];
+      }
+
+      if (students[firstLetter].some(s => s.name === name)) {
+        alert("Student already exists.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        students[firstLetter].push({
+          name,
+          father,
+          studentClass,
+          roll,
+          fees,
+          due,
+          image: e.target.result
+        });
+
+        students[firstLetter].sort((a, b) => a.name.localeCompare(b.name));
+        renderGroups();
+      };
+      reader.readAsDataURL(imageInput.files[0]);
+    }
+
+    function renderGroups() {
+      const container = document.getElementById("studentGroups");
+      container.innerHTML = "";
+
+      const sortedKeys = Object.keys(students).sort();
+      sortedKeys.forEach(letter => {
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "student-group";
+        groupDiv.innerHTML = `<h3>Group ${letter}</h3><table>
+          <tr>
+            <th>Image</th>
+            <th>Student's Name</th>
+            <th>Father's Name</th>
+            <th>Class</th>
+            <th>Roll No.</th>
+            <th>Fees Submit</th>
+            <th>Due Fees</th>
+          </tr>
+        </table>`;
+
+        const table = groupDiv.querySelector("table");
+        students[letter].forEach(student => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><img src="${student.image}" class="student-img" /></td>
+            <td>${student.name}</td>
+            <td>${student.father}</td>
+            <td>${student.studentClass}</td>
+            <td>${student.roll}</td>
+            <td>₹${student.fees}</td>
+            <td>₹${student.due}</td>
+          `;
+          table.appendChild(row);
+        });
+
+        container.appendChild(groupDiv);
+      });
+    }
+
+    // Highlight when centered
+    setInterval(() => {
+      const scrollText = document.getElementById('scrollText');
+      const rect = scrollText.getBoundingClientRect();
+      const center = window.innerWidth / 2;
+      if (rect.left < center && rect.right > center) {
+        scrollText.classList.add('highlight');
+      } else {
+        scrollText.classList.remove('highlight');
+      }
+    }, 100);
+  </script>
+</body>
+</html>
